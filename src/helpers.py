@@ -2,12 +2,13 @@
 
 import logging
 import re
+import sys
 
 from typing import List
 from pathlib import Path
 
 LOGGER = logging.getLogger(name="Spotify Blocker")
-LOGGER.setLevel("info")
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 def _regexify(value: str) -> re.Pattern:
     """

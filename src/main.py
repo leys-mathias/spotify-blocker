@@ -3,6 +3,7 @@
 import argparse
 import logging
 import re
+import sys
 import time
 
 from config import CLIENT_ID, CLIENT_SECRET, OAUTH_SCOPE, REDIRECT_URI, WAIT_SECONDS
@@ -21,7 +22,7 @@ PARSER.add_argument('--blocked_songs', type=Path, required=False, default="block
 ARGS = PARSER.parse_args()
 
 LOGGER = logging.getLogger(name="Spotify Blocker")
-LOGGER.setLevel("info")
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 def is_blocked_artist(current_track: Dict, blocked_artists: List[re.Pattern]) -> bool:
     """
