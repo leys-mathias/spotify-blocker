@@ -1,18 +1,18 @@
 # Spotify Blocker
 
-Script that when run will monitor your Spotify activity and auto-skip specified songs and/or artists. 
+Script that will monitor your Spotify activity and auto-skip specified songs and/or artists. 
 
-This offers protection against a day-zero vulnerability in Spotify: the ability of malicious actors to play bad music via your Spotify account. This application provides quantum-secure protection against this threat.
+This offers protection against a day-zero vulnerability in Spotify: the ability of malicious actors to play bad music via your Spotify account when in control of the app. This script provides quantum-secure protection against this threat.
 
 ## Description
 
-While Spotify offers the option to block certain artists and/or songs, this can be disabled by potential malicious actors such as ""friends"" or family members using your Spotify account who are aware of this feature.
+While Spotify offers the option to block certain artists and/or songs, this can be disabled by potential malicious actors such as """friends""" or family members using your Spotify account who are aware of this feature.
 
 This can lead to nefarious situations including (but not limited to) having to listen to Red Hot Chili Peppers songs.
 
 This repo aims to provide quantum-secure protection against this threat.
 
-It contains a script that will monitor your Spotify account's activity via the Spotify activity and auto-skip specified blocked songs or songs from specified blocked artists (including but not limited to the Red Hot Chili Peppers). Since this is a script that communicates with the Spotify API directly, its behaviour cannot be overridden by a malicious actor with control over the UI.
+It contains a script that will monitor your Spotify account's activity via the Spotify Web API and auto-skip specified blocked songs or songs from specified blocked artists (including but not limited to the Red Hot Chili Peppers). Since this is a script that communicates with the Spotify API directly, its behaviour cannot be overridden by a malicious actor in control of the UI.
 
 Malicious actors will never abuse your Spotify account again!
 
