@@ -9,12 +9,12 @@ load_dotenv()
 try:
     CLIENT_ID = os.environ['CLIENT_ID']
 except KeyError:
-    raise KeyError("CLIENT_ID variable in .env file not set")
+    raise KeyError("CLIENT_ID environment variable not set")
 
 try:
     CLIENT_SECRET = os.environ['CLIENT_SECRET']
 except KeyError:
-    raise KeyError("CLIENT_SECRET variable in .env file not set")
+    raise KeyError("CLIENT_SECRET environment variable not set")
 
 OAUTH_SCOPE = " ".join([
     "user-read-private",
