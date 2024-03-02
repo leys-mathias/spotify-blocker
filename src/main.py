@@ -115,6 +115,7 @@ def main():
 
         if should_skip_song:
             spotify_client.next_track()
+            time.sleep(0.5)  # Brief cool-down period: otherwise it can skip the next song as well
 
 if __name__ == '__main__':
     main()
