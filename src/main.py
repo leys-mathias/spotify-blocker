@@ -14,8 +14,8 @@ import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
 PARSER = argparse.ArgumentParser("Spotify blocker arguments")
-PARSER.add_argument('blocked_artists', type=Path, default="blocked_artists.txt", help='Path to blocked artists')
-PARSER.add_argument('blocked_songs', type=Path, default="blocked_songs.txt", help='Path to blocked songs')
+PARSER.add_argument('--blocked_artists', type=Path, required=False, default="blocked_artists.txt", help='Path to blocked artists')
+PARSER.add_argument('--blocked_songs', type=Path, required=False, default="blocked_songs.txt", help='Path to blocked songs')
 
 ARGS = PARSER.parse_args()
 
