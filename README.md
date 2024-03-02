@@ -49,9 +49,7 @@ python main.py
 
 - [x] Accidental deletion prevention of Red Hot Chili Peppers
 - [x] Red Hot Chili peppers block by default to save time
-- [ ] Add support for YouTube Music
-- [ ] Add support for Apple Music
-- [ ] Implement in Rust to optimize performance
+- [ ] Add feature to block entire Christmas music genre
 - [ ] Fine-tune wait times to fall just under Spotify's API rate limits
 
 ## License
