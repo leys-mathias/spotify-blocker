@@ -1,6 +1,7 @@
 """Auto-skip Spotify artists / songs"""
 
 import argparse
+import logging
 import re
 import time
 
@@ -18,6 +19,9 @@ PARSER.add_argument('--blocked_artists', type=Path, required=False, default="blo
 PARSER.add_argument('--blocked_songs', type=Path, required=False, default="blocked_songs.txt", help='Path to blocked songs')
 
 ARGS = PARSER.parse_args()
+
+LOGGER = logging.getLogger(name="Spotify Blocker")
+LOGGER.setLevel("info")
 
 def is_blocked_artist(current_track: Dict, blocked_artists: List[re.Pattern]) -> bool:
     """
@@ -91,10 +95,11 @@ def is_blocked(
         or is_blocked_song(current_track, blocked_songs)
     )
 
-def main():
+def main() -> None:
+    LOGGER.info("Application started...")
     blocked_artists = parse_blocked_artists(ARGS.blocked_artists)
     blocked_songs = parse_blocked_songs(ARGS.blocked_songs)
-    
+
     auth_manager = SpotifyOAuth(
         client_id=CLIENT_ID,
         client_secret=CLIENT_SECRET,
@@ -114,6 +119,7 @@ def main():
         )
 
         if should_skip_song:
+            LOGGER.info("Saved your ears from a song")
             spotify_client.next_track()
             time.sleep(0.5)  # Brief cool-down period: otherwise it can skip the next song as well
 

@@ -1,9 +1,13 @@
 """Helper functions"""
 
+import logging
 import re
 
 from typing import List
 from pathlib import Path
+
+LOGGER = logging.getLogger(name="Spotify Blocker")
+LOGGER.setLevel("info")
 
 def _regexify(value: str) -> re.Pattern:
     """
@@ -53,16 +57,20 @@ def parse_blocked_artists(blocked_artists: Path) -> List[re.Pattern]:
         List[re.Pattern]: RegEx patterns that match artist names.
     """
     if not blocked_artists:
+        LOGGER.info("Blocked artists are: Red Hot Chili Peppers")
         return [_regexify("Red Hot Chili Peppers")]
 
     artists = _read_to_list(blocked_artists)
 
     if not artists:
+        LOGGER.info("Blocked artists are: Red Hot Chili Peppers")
         return [_regexify("Red Hot Chili Peppers")]
 
     # Extra protection against accidental deletion
     if "Red Hot Chili Peppers" not in artists:
         artists.append("Red Hot Chili Peppers")
+
+    LOGGER.info("Blocked artists are: %s" % ", ".join(artists))
 
     artist_rgx = [_regexify(artist) for artist in artists]
     return artist_rgx
@@ -78,12 +86,16 @@ def parse_blocked_songs(blocked_songs: Path) -> List[re.Pattern]:
         List[re.Pattern]: RegEx patterns that match songs names.
     """
     if not blocked_songs:
+        LOGGER.info("No blocked songs")
         return []
 
     songs = _read_to_list(blocked_songs)
 
     if not songs:
+        LOGGER.info("No blocked songs")
         return []
+
+    LOGGER.info("Blocked artists are: %s" % ", ".join(songs))
 
     songs_rgx = [_regexify(song) for song in songs]
     return songs_rgx
