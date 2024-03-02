@@ -1,13 +1,28 @@
 """App configuration variables"""
 
-from helpers import regexify
+import os
 
-_BLOCKED_ARTISTS = [
-    "Red Hot Chili Peppers",  # Comes pre-blocked for obvious reasons
-]
-BLOCKED_ARTISTS_RGX = [regexify(artist_name) for artist_name in _BLOCKED_ARTISTS]
+from dotenv import load_dotenv
 
-_BLOCKED_SONGS = []
-BLOCKED_SONGS_RGX = [regexify(song_name) for song_name in _BLOCKED_SONGS]
+load_dotenv()
+
+try:
+    CLIENT_ID = os.environ['CLIENT_ID']
+except KeyError:
+    raise KeyError("CLIENT_ID variable in .env file not set")
+
+try:
+    CLIENT_SECRET = os.environ['CLIENT_SECRET']
+except KeyError:
+    raise KeyError("CLIENT_SECRET variable in .env file not set")
+
+OAUTH_SCOPE = " ".join([
+    "user-read-private",
+    "user-read-currently-playing",
+    "user-read-playback-state",
+    "user-modify-playback-state",
+])
+
+REDIRECT_URI = os.environ.get("REDIRECT_URI", "https://localhost:8888/callback")
 
 WAIT_SECONDS = 0.5  # Stays on safe side of Spotify's API rate limits

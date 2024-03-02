@@ -1,38 +1,31 @@
 """Auto-skip Spotify artists / songs"""
 
-import os
+import argparse
+import re
 import time
 
-from config import BLOCKED_ARTISTS_RGX, BLOCKED_SONGS_RGX, WAIT_SECONDS
-from typing import Dict
+from config import CLIENT_ID, CLIENT_SECRET, OAUTH_SCOPE, REDIRECT_URI, WAIT_SECONDS
+from helpers import parse_blocked_artists, parse_blocked_songs
+
+from pathlib import Path
+from typing import Dict, List
 
 import spotipy
-
-from dotenv import load_dotenv
 from spotipy.oauth2 import SpotifyOAuth
 
-load_dotenv()
+PARSER = argparse.ArgumentParser("Spotify blocker arguments")
+PARSER.add_argument('blocked_artists', type=Path, default="blocked_artists.txt", help='Path to blocked artists')
+PARSER.add_argument('blocked_songs', type=Path, default="blocked_songs.txt", help='Path to blocked songs')
 
-_auth_manager = SpotifyOAuth(
-    client_id=os.getenv('CLIENT_ID'),
-    client_secret=os.getenv('CLIENT_SECRET'),
-    redirect_uri=os.getenv('REDIRECT_URI'),
-    scope=" ".join(
-        ["user-read-private",
-        "user-read-currently-playing",
-        "user-read-playback-state",
-        "user-modify-playback-state",]
-    ),
-)
+ARGS = PARSER.parse_args()
 
-spotify_client = spotipy.Spotify(auth_manager=_auth_manager)
-
-def is_blocked_artist(current_track: Dict) -> bool:
+def is_blocked_artist(current_track: Dict, blocked_artists: List[re.Pattern]) -> bool:
     """
     Checks whether the provided track contains a blocked artist.
 
     Args:
         current_track (Dict): Currently playing track Dict object.
+        blocked_artists (List[re.Pattern]): Specified blocked artists.
     
     Returns:
         bool: Whether or not Spotify is playing a blocked artist.
@@ -47,18 +40,19 @@ def is_blocked_artist(current_track: Dict) -> bool:
 
     return any(
         any(
-            blocked_artist_rgx.search(artist['name'])
-            for blocked_artist_rgx in BLOCKED_ARTISTS_RGX
+            blocked_artist.search(artist['name'])
+            for blocked_artist in blocked_artists
         )
         for artist in artists
     )
 
-def is_blocked_song(current_track: Dict) -> bool:
+def is_blocked_song(current_track: Dict, blocked_songs: List[re.Pattern]) -> bool:
     """
     Checks whether the provided track contains a blocked song.
 
     Args:
         current_track (Dict): Currently playing track Dict object.
+        blocked_songs (List[re.Pattern]): Specified blocked songs.
     
     Returns:
         bool: Whether or not Spotify is playing a blocked song.
@@ -72,12 +66,18 @@ def is_blocked_song(current_track: Dict) -> bool:
         return False
 
     return any(
-        blocked_song_rgx.search(song)
-        for blocked_song_rgx in BLOCKED_SONGS_RGX
+        blocked_song.search(song)
+        for blocked_song in blocked_songs
     )
 
-def should_skip_song(spotify_client: spotipy.Spotify) -> bool:
-    """Determines whether or not to skip the current Spotify song.
+def is_blocked(
+        *,
+        spotify_client: spotipy.Spotify,
+        blocked_artists: List[re.Pattern],
+        blocked_songs: List[re.Pattern],
+    ) -> bool:
+    """
+    Determines whether or not to skip the current Spotify song.
 
     Args:
         spotify_client (spotipy.Spotify): Spotify client object.
@@ -87,13 +87,34 @@ def should_skip_song(spotify_client: spotipy.Spotify) -> bool:
     """
     current_track = spotify_client.current_playback()
     return (
-        is_blocked_artist(current_track)
-        or is_blocked_song(current_track)
+        is_blocked_artist(current_track, blocked_artists)
+        or is_blocked_song(current_track, blocked_songs)
     )
 
+def main():
+    blocked_artists = parse_blocked_artists(ARGS.blocked_artists)
+    blocked_songs = parse_blocked_songs(ARGS.blocked_songs)
+    
+    auth_manager = SpotifyOAuth(
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
+        redirect_uri=REDIRECT_URI,
+        scope=OAUTH_SCOPE,
+    )
 
-if __name__ == '__main__':
+    spotify_client = spotipy.Spotify(auth_manager=auth_manager)
+
     while True:
         time.sleep(WAIT_SECONDS)
-        if should_skip_song(spotify_client):
+
+        should_skip_song = is_blocked(
+            spotify_client=spotify_client,
+            blocked_artists=blocked_artists,
+            blocked_songs=blocked_songs,
+        )
+
+        if should_skip_song:
             spotify_client.next_track()
+
+if __name__ == '__main__':
+    main()
